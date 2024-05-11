@@ -14,7 +14,9 @@ lazy val `paymentsystem` =
 lazy val dependencies = Seq(
   libraryDependencies ++= Seq(
     com.typesafe.akka.`akka-actor-typed`,
+    com.typesafe.akka.`akka-stream`,
     com.typesafe.akka.`akka-http`,
+    com.typesafe.akka.`akka-http-spray-json`,
     com.typesafe.`scala-logging`.`scala-logging`,
     ch.qos.logback.`logback-classic`,
   )

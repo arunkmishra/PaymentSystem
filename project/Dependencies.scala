@@ -9,6 +9,7 @@ object Dependencies {
         val `akka-actor-typed` = "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion
         val `akka-stream` = "com.typesafe.akka" %% "akka-stream" % AkkaVersion
         val `akka-http` = "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion
+        val `akka-http-spray-json` = "com.typesafe.akka" %% "akka-http-spray-json" % AkkaHttpVersion
       }
 
       object `scala-logging` {
