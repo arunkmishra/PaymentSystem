@@ -6,7 +6,9 @@ import scala.util.Try
 
 import spray.json._
 
-sealed case class TransactionId(id: String)
+sealed case class TransactionId(id: String) {
+  override def toString: String = s"$id"
+}
 object TransactionId {
   def apply(): TransactionId = TransactionId(UUID.randomUUID().toString)
   implicit object transactionIdFormat extends RootJsonFormat[TransactionId] {

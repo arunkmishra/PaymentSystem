@@ -1,7 +1,7 @@
 package com.github.psp.paymentsystem.models
 
 import com.github.psp.paymentsystem.service.validator.ValidationError
-import com.github.psp.paymentsystem.service.validator.Validator.validateAmount
+import com.github.psp.paymentsystem.service.validator.Validator._
 
 case class PaymentRequest(
   card: CreditCard,
@@ -14,5 +14,8 @@ case class PaymentRequest(
     for {
       _ <- card.isValidCard
       _ <- validateAmount(amount)
+      _ <- validateCvv(cvv)
+      _ <- validateCurrency(currency)
+      _ <- validateMerchantId(merchantId)
     } yield this
 }

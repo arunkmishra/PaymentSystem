@@ -8,7 +8,7 @@ import com.github.psp.paymentsystem.models._
 class MockAcquirerConnector extends AcquirerConnector {
   override def sendToAcquirer(transaction: Transaction): Future[TransactionStatus] =
     Future {
-      Thread.sleep(5000)
+      logger.info(s"Sending request to acquirer for transactionId[${transaction.id}]")
       if (transaction.creditCard.cardNumber.last.asDigit % 2 != 0) Approved else Failed
     }
 }

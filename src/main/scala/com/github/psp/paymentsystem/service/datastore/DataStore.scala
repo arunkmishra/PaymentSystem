@@ -2,9 +2,11 @@ package com.github.psp.paymentsystem.service.datastore
 
 import scala.concurrent._
 
+import com.typesafe.scalalogging.LazyLogging
+
 import com.github.psp.paymentsystem.models._
 
-trait DataStore {
+trait DataStore extends LazyLogging {
   def addTransaction(
     transaction: Transaction
   )(implicit

@@ -3,6 +3,7 @@ package com.github.psp.paymentsystem.service
 import scala.concurrent._
 
 import com.github.psp.paymentsystem.models._
+import com.github.psp.paymentsystem.models.response.TransactionResponse
 import com.github.psp.paymentsystem.service.acquirer._
 import com.github.psp.paymentsystem.service.datastore._
 
@@ -12,16 +13,20 @@ class PaymentProcessorService(dataStore: DataStore, acquirer: AcquirerConnector)
   override def processPayment(request: PaymentRequest): Future[TransactionResponse] = {
     val initialTransaction = Transaction.createInitialTransaction(request)
     val transactionId = initialTransaction.id
+    logger.info(s"Processing payment for TransactionId[$transactionId]")
     dataStore.addTransaction(initialTransaction).flatMap { _ =>
       request
         .isValidRequest
         .fold(
-          validationError =>
+          validationError => {
+            logger.warn(s"Transaction[$transactionId] failed due to validation failures")
             dataStore
               .updateTransaction(transactionId, Failed, Some(validationError.errorMessage))
               .map { _ =>
-                TransactionResponse(transactionId, Failed, Some(validationError.errorMessage))
-              },
+                response
+                  .TransactionResponse(transactionId, Failed, Some(validationError.errorMessage))
+              }
+          },
           _ => {
             val processingTransaction = initialTransaction.updateStatus(Processing)
             dataStore.updateTransaction(transactionId, Processing)
@@ -35,7 +40,12 @@ class PaymentProcessorService(dataStore: DataStore, acquirer: AcquirerConnector)
                   transactionStatus,
                   message,
                 )
-                .map(_ => TransactionResponse(transactionId, transactionStatus, message))
+                .map { _ =>
+                  logger.info(
+                    s"Finished transaction processing with status: $transactionStatus for transactionId[$transactionId]"
+                  )
+                  response.TransactionResponse(transactionId, transactionStatus, message)
+                }
             }
           },
         )

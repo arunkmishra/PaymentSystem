@@ -4,6 +4,7 @@ import MyUtil._
 ThisBuild / organization := "com.github.psp"
 ThisBuild / scalaVersion := "2.13.13"
 ThisBuild / scalacOptions := Seq("-Wunused:imports")
+resolvers += "Akka library repository".at("https://repo.akka.io/maven")
 
 lazy val `paymentsystem` =
   project

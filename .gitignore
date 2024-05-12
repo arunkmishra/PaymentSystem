@@ -11,3 +11,5 @@
 .vscode/
 metals.sbt
 target/
+application.log
+app_log/

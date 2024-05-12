@@ -6,7 +6,6 @@ import scala.concurrent._
 import com.typesafe.scalalogging.LazyLogging
 
 import com.github.psp.paymentsystem.models._
-import com.github.psp.paymentsystem.utils.PaymentLogger
 
 sealed class InMemoryDataStore extends DataStore with LazyLogging {
   private val Transactions: mutable.Map[TransactionId, Transaction] = mutable.Map()
@@ -34,7 +33,6 @@ sealed class InMemoryDataStore extends DataStore with LazyLogging {
     Future {
       logTransactionChange(transaction)
       synchronized {
-        PaymentLogger.logTransaction(transaction)
         Transactions(transaction.id) = transaction
         transaction.id
       }
@@ -49,6 +47,9 @@ sealed class InMemoryDataStore extends DataStore with LazyLogging {
   ): Future[Option[Transaction]] =
     Future {
       fetchTransactionById(transactionId).map { fetchedTransaction =>
+        logger.debug(
+          s"Updating transaction status from ${fetchedTransaction.status} to $newStatus for transactionId[$transactionId]"
+        )
         val updatedTransaction = fetchedTransaction.updateStatus(newStatus, message)
         logTransactionChange(updatedTransaction)
         Transactions.update(
@@ -61,9 +62,9 @@ sealed class InMemoryDataStore extends DataStore with LazyLogging {
 
   def logBothStores: Unit = {
     logger.info("-" * 20)
-    logger.info(Transactions.mkString("\n"))
+    logger.info("Transactions:\n" + Transactions.mkString("\n"))
     logger.info("-" * 20)
-    logger.info(AllTransactionsStore.mkString("\n"))
+    logger.info("All transactions:\n" + AllTransactionsStore.mkString("\n"))
     logger.info("-" * 20)
 
   }

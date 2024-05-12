@@ -14,6 +14,9 @@ sealed case class Transaction(
 ) {
   def updateStatus(newStatus: TransactionStatus, message: Option[String] = None): Transaction =
     this.copy(status = newStatus, updatedAt = Some(LocalDateTime.now()), message = message)
+
+  override def toString: String =
+    s"${id.id} | $creditCard | $amount | $status | $createdAt | ${updatedAt.getOrElse("NA")} | ${message.mkString}"
 }
 object Transaction {
   def createInitialTransaction(request: PaymentRequest): Transaction =
