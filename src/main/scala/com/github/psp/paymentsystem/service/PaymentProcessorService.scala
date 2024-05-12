@@ -6,6 +6,7 @@ import com.github.psp.paymentsystem.models._
 import com.github.psp.paymentsystem.models.response.TransactionResponse
 import com.github.psp.paymentsystem.service.acquirer._
 import com.github.psp.paymentsystem.service.datastore._
+import com.github.psp.paymentsystem.service.validator.ValidationError
 
 class PaymentProcessorService(dataStore: DataStore, acquirer: AcquirerConnector)
     extends PaymentProcessor {
@@ -18,37 +19,43 @@ class PaymentProcessorService(dataStore: DataStore, acquirer: AcquirerConnector)
       request
         .isValidRequest
         .fold(
-          validationError => {
-            logger.warn(s"Transaction[$transactionId] failed due to validation failures")
-            dataStore
-              .updateTransaction(transactionId, Failed, Some(validationError.errorMessage))
-              .map { _ =>
-                response
-                  .TransactionResponse(transactionId, Failed, Some(validationError.errorMessage))
-              }
-          },
-          _ => {
-            val processingTransaction = initialTransaction.updateStatus(Processing)
-            dataStore.updateTransaction(transactionId, Processing)
-            val processing = acquirer.sendToAcquirer(processingTransaction)
-
-            processing.flatMap { transactionStatus =>
-              val message = if (transactionStatus == Failed) Some("Failed by acquirer") else None
-              dataStore
-                .updateTransaction(
-                  transactionId,
-                  transactionStatus,
-                  message,
-                )
-                .map { _ =>
-                  logger.info(
-                    s"Finished transaction processing with status: $transactionStatus for transactionId[$transactionId]"
-                  )
-                  response.TransactionResponse(transactionId, transactionStatus, message)
-                }
-            }
-          },
+          validationError => handleInvalidPaymentRequest(transactionId, validationError),
+          _ => processPaymentForValidRequest(initialTransaction),
         )
+    }
+  }
+
+  private def handleInvalidPaymentRequest(transactionId: TransactionId, error: ValidationError)
+    : Future[TransactionResponse] = {
+    logger.warn(s"Transaction[$transactionId] failed due to validation failures")
+    dataStore
+      .updateTransaction(transactionId, Failed, Some(error.errorMessage))
+      .map { _ =>
+        response
+          .TransactionResponse(transactionId, Failed, Some(error.errorMessage))
+      }
+  }
+
+  private def processPaymentForValidRequest(transaction: Transaction)
+    : Future[TransactionResponse] = {
+    val processingTransaction = transaction.updateStatus(Processing)
+    dataStore.updateTransaction(transaction.id, Processing)
+    val processing = acquirer.sendToAcquirer(processingTransaction)
+
+    processing.flatMap { transactionStatus =>
+      val message = if (transactionStatus == Failed) Some("Failed by acquirer") else None
+      dataStore
+        .updateTransaction(
+          transaction.id,
+          transactionStatus,
+          message,
+        )
+        .map { _ =>
+          logger.info(
+            s"Finished transaction processing with status: $transactionStatus for transactionId[${transaction.id}]"
+          )
+          response.TransactionResponse(transaction.id, transactionStatus, message)
+        }
     }
   }
 

@@ -20,5 +20,8 @@ lazy val dependencies = Seq(
     com.typesafe.akka.`akka-http-spray-json`,
     com.typesafe.`scala-logging`.`scala-logging`,
     ch.qos.logback.`logback-classic`,
+    org.scalatest.scalatest % Test,
+    com.typesafe.akka.`akka-stream-testkit`,
+    com.typesafe.akka.`akka-http-testkit`,
   )
 )

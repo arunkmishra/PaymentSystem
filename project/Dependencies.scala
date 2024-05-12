@@ -10,6 +10,8 @@ object Dependencies {
         val `akka-stream` = "com.typesafe.akka" %% "akka-stream" % AkkaVersion
         val `akka-http` = "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion
         val `akka-http-spray-json` = "com.typesafe.akka" %% "akka-http-spray-json" % AkkaHttpVersion
+        val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion
+        val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % AkkaHttpVersion
       }
 
       object `scala-logging` {
@@ -27,6 +29,13 @@ object Dependencies {
         val `logback-classic` =
           "ch.qos.logback" % "logback-classic" % LogbackVersion
       }
+    }
+  }
+
+  object org {
+    object scalatest {
+      private val ScalatestVersion = "3.2.18"
+      val scalatest = "org.scalatest" %% "scalatest" % ScalatestVersion
     }
   }
 }

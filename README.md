@@ -8,8 +8,8 @@ This project implements a simple Payment Service Provider (PSP) system using Sca
 
 ## Getting Started
 ### Prerequisites
-- Scala 2.13.x
-- sbt (Scala Build Tool) 1.4.x or higher
+- Scala 2.13.13
+- sbt (Scala Build Tool) 1.10.0
 ### Installing
 Clone the repository to your local machine:
 ```bash
@@ -25,8 +25,13 @@ Compile the project and run tests:
 - Application will start on http://localhost:8080.
 
 ## Usage
+## Check Status
+To check application running status:
+```bash
+curl -X GET http://localhost:8080/status
+```
 ### Processing a Payment
-To process a payment, send a POST request to `/v1/api/payments` with the following JSON payload:
+To process a payment, send a POST request to `/v1/api/payment` with the following JSON payload:
 ```json
 {
 "cardNumber": "4242424242424242",
@@ -39,22 +44,10 @@ To process a payment, send a POST request to `/v1/api/payments` with the followi
 ```
 Curl  to send the request:
 ```bash
-curl -X POST http://localhost:8080/v1/api/payments \
+curl -X POST http://localhost:8080/v1/api/payment \
 -H "Content-Type: application/json" \
 -d '{"cardNumber": "4242424242424242", "expiryDate": "12/27", "cvv": 123, "amount": 100.00, "currency": "USD", "merchantId": "merchant_001"}'
 ```
 ### Viewing Logs
 Check the logs for application at `./application.log` file.
-## Development
-### Adding Dependencies
-To add new dependencies, update build.sbt:
-```
-libraryDependencies += "com.some.dependency" %% "dependency-name" % "version"
-```
 
-### Testing
-
-Run tests using sbt:
-
-```bash
-sbt test

@@ -23,8 +23,10 @@ sealed class InMemoryDataStore extends DataStore with LazyLogging {
     AllTransactionsStore(transaction.id) = newTransactions
   }
 
-  private def fetchTransactionById(transactionId: TransactionId): Option[Transaction] =
+  def fetchTransactionById(transactionId: TransactionId): Option[Transaction] =
     Transactions.get(transactionId)
+  def fetchTransactionHistoryById(transactionId: TransactionId): Option[List[Transaction]] =
+    AllTransactionsStore.get(transactionId)
   override def addTransaction(
     transaction: Transaction
   )(implicit

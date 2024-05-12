@@ -3,6 +3,8 @@ package com.github.psp.paymentsystem.models.request
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
+import scala.util.Try
+
 import spray.json._
 
 import com.github.psp.paymentsystem.models._
@@ -18,7 +20,10 @@ case class ProcessPaymentRequest(
   import ProcessPaymentRequest._
   def toPaymentRequest: PaymentRequest =
     PaymentRequest(
-      CreditCard(cardNumber, YearMonth.parse(expiryDate, formatter)),
+      CreditCard(
+        cardNumber,
+        Try(YearMonth.parse(expiryDate, formatter)).getOrElse(YearMonth.now()),
+      ),
       cvv,
       amount,
       currency,

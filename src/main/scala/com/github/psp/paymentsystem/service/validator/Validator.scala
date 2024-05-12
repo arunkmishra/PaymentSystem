@@ -5,7 +5,7 @@ import java.time.YearMonth
 import com.github.psp.paymentsystem.utils.CardUtils
 
 object Validator {
-  private val validCurrencies = Seq("USD", "INR", "THB", "CHF", "EUR")
+  private[validator] val ValidCurrencies = Seq("USD", "INR", "THB", "CHF", "EUR")
   def validateCardNumber(cardNumber: String): Either[ValidationError, String] =
     if (CardUtils.validateCardNumber(cardNumber)) Right(cardNumber)
     else Left(InvalidCardNumber())
@@ -28,6 +28,6 @@ object Validator {
     else Left(InvalidCvv())
 
   def validateCurrency(currency: String): Either[ValidationError, String] =
-    if (validCurrencies.contains(currency)) Right(currency)
+    if (ValidCurrencies.contains(currency)) Right(currency)
     else Left(InvalidCurrency())
 }

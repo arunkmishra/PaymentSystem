@@ -9,6 +9,6 @@ class MockAcquirerConnector extends AcquirerConnector {
   override def sendToAcquirer(transaction: Transaction): Future[TransactionStatus] =
     Future {
       logger.info(s"Sending request to acquirer for transactionId[${transaction.id}]")
-      if (transaction.creditCard.cardNumber.last.asDigit % 2 != 0) Approved else Failed
+      if (transaction.creditCard.cardNumber.last.asDigit % 2 == 0) Approved else Failed
     }
 }
