@@ -7,7 +7,7 @@ import com.github.psp.paymentsystem.models._
 case class TransactionResponse(
   transactionId: TransactionId,
   status: TransactionStatus,
-  errorMessage: Option[String],
+  message: Option[String],
 )
 
 object TransactionResponse {

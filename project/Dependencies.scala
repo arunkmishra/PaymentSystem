@@ -37,5 +37,9 @@ object Dependencies {
       private val ScalatestVersion = "3.2.18"
       val scalatest = "org.scalatest" %% "scalatest" % ScalatestVersion
     }
+    object scalatestplus {
+      private val ScalatestVersion = "3.2.18.0"
+      val `mockito-5-10` = "org.scalatestplus" %% "mockito-5-10" % ScalatestVersion
+    }
   }
 }

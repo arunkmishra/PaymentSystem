@@ -18,10 +18,15 @@ cd paymentsystem
 ```
 Compile the project and run tests:
 `sbt clean compile test`
+Build docker image: `docker build -t payment-system . `
 
 ### Running
+#### Run locally
 - To start the server, use: `sbt run`.
-- Run using docker: `docker run -p 8080:8080 payment-system:latest`
+#### Run using docker
+- Pull image `docker pull arunmishra/payment-systemlatest`
+- Or build image `docker build -t payment-system . `
+- Run application ` docker run -p 8080:8080 arunmishra/payment-system:latest`
 - Application will start on http://localhost:8080.
 
 ## Usage
@@ -51,3 +56,7 @@ curl -X POST http://localhost:8080/v1/api/payment \
 ### Viewing Logs
 Check the logs for application at `./application.log` file.
 
+## Data protection:
+- In this implementation, sensitive data is not encrypted before storing to DB here. In this case, sensitive data includes credit card number, cvv.
+- Ideally, aligning with PCI guidelines, we need to encrypt sensitive data before storing/logging it.
+- For encryption, we can use AES or SHA-256, and store private key in some secure place where access is restricted to only some users(maybe vault).

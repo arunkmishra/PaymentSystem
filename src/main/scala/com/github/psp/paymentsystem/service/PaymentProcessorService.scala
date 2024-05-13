@@ -58,8 +58,6 @@ class PaymentProcessorService(dataStore: DataStore, acquirer: AcquirerConnector)
         }
     }
   }
-
-  override def printTransaction: Unit = dataStore.logBothStores
 }
 
 object PaymentProcessorService {

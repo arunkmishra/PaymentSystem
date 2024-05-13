@@ -9,5 +9,4 @@ import com.github.psp.paymentsystem.models.response.TransactionResponse
 
 trait PaymentProcessor extends LazyLogging {
   def processPayment(request: PaymentRequest): Future[TransactionResponse]
-  def printTransaction: Unit
 }

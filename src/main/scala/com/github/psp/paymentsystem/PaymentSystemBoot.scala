@@ -13,7 +13,6 @@ import com.github.psp.paymentsystem.routes._
 import com.github.psp.paymentsystem.service.PaymentProcessorService
 
 object PaymentSystemBoot extends LazyLogging with App {
-  logger.info("─" * 100)
   implicit val system: ActorSystem = ActorSystem("payment-system")
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
@@ -42,5 +41,4 @@ object PaymentSystemBoot extends LazyLogging with App {
   }
 
   Await.result(system.whenTerminated, Duration.Inf)
-  logger.info("─" * 100)
 }

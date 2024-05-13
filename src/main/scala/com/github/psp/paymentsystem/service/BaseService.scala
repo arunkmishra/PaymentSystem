@@ -25,11 +25,11 @@ trait BaseService extends LazyLogging {
     processingFuture.onComplete {
       case Success(_) =>
         val responseTime = System.currentTimeMillis() - startTime
-        logger.info(s"successfully finished request($thePath) in ${responseTime} ms")
+        logger.debug(s"successfully finished request($thePath) in ${responseTime} ms")
       // log request into hadoop
       case Failure(err) =>
         val responseTime = System.currentTimeMillis() - startTime
-        logger.error(s"Failed request($thePath) in $responseTime ms")
+        logger.warn(s"Failed request($thePath) in $responseTime ms", err)
       // log request into hadoop
     }
     processingFuture

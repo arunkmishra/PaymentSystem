@@ -19,14 +19,14 @@ class PaymentProcessorServiceSpec extends AsyncFlatSpec with Matchers {
 
   it should "process a valid payment request successfully" in {
     service.processPayment(ValidPaymentRequest).map { result =>
-      result.errorMessage shouldEqual None
+      result.message shouldEqual None
       result.status shouldEqual Approved
     }
   }
 
   it should "handle an invalid payment request and reflect it properly" in {
     service.processPayment(InvalidPaymentRequest).map { result =>
-      result.errorMessage.get shouldEqual CardExpired().errorMessage
+      result.message.get shouldEqual CardExpired().errorMessage
       result.status shouldEqual Failed
     }
   }

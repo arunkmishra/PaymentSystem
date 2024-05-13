@@ -1,21 +1,33 @@
 package com.github.psp.paymentsystem.routes
 
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.github.psp.paymentsystem.models.request.ProcessPaymentRequest
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-import akka.http.scaladsl.model.StatusCodes
-import com.github.psp.paymentsystem.models.{Approved, Failed}
-import com.github.psp.paymentsystem.models.response.TransactionResponse
-import com.github.psp.paymentsystem.routes.PaymentRoutesSpec.{InvalidPaymentRequest, ValidPaymentRequest}
-import com.github.psp.paymentsystem.service.PaymentProcessorService
-import com.github.psp.paymentsystem.service.validator.CardExpired
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
-
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-class PaymentRoutesSpec extends AnyFlatSpec with Matchers with ScalatestRouteTest {
+import scala.concurrent.Future
+
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.testkit.ScalatestRouteTest
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.mockito.MockitoSugar
+
+import com.github.psp.paymentsystem.models._
+import com.github.psp.paymentsystem.models.request.ProcessPaymentRequest
+import com.github.psp.paymentsystem.models.response._
+import com.github.psp.paymentsystem.routes.PaymentRoutesSpec._
+import com.github.psp.paymentsystem.service.PaymentProcessorService
+import com.github.psp.paymentsystem.service.acquirer.MockAcquirerConnector
+import com.github.psp.paymentsystem.service.datastore.InMemoryDataStore
+import com.github.psp.paymentsystem.service.validator.CardExpired
+
+class PaymentRoutesSpec
+    extends AnyFlatSpec
+       with Matchers
+       with ScalatestRouteTest
+       with MockitoSugar {
   private lazy val paymentProcessorService = PaymentProcessorService()
   private val paymentRoutes = new PaymentRoutes(paymentProcessorService).routes
 
@@ -24,7 +36,7 @@ class PaymentRoutesSpec extends AnyFlatSpec with Matchers with ScalatestRouteTes
       status shouldBe StatusCodes.OK
       val expectedResponse = responseAs[TransactionResponse]
       expectedResponse.status shouldBe Approved
-      expectedResponse.errorMessage shouldBe None
+      expectedResponse.message shouldBe None
     }
   }
 
@@ -33,7 +45,20 @@ class PaymentRoutesSpec extends AnyFlatSpec with Matchers with ScalatestRouteTes
       status shouldBe StatusCodes.OK
       val expectedResponse = responseAs[TransactionResponse]
       expectedResponse.status shouldBe Failed
-      expectedResponse.errorMessage shouldBe Some(CardExpired().errorMessage)
+      expectedResponse.message shouldBe Some(CardExpired().errorMessage)
+    }
+  }
+
+  it should "return 500 response as json if something goes wrong" in {
+    lazy val mockedDb = mock[InMemoryDataStore]
+    when(mockedDb.addTransaction(any())(any()))
+      .thenReturn(Future.failed(new Throwable("Cannot save in DB")))
+    val paymentProcessor = new PaymentProcessorService(mockedDb, new MockAcquirerConnector())
+    val paymentRoutes = new PaymentRoutes(paymentProcessor).routes
+    Post("/v1/api/payment", InvalidPaymentRequest) ~> paymentRoutes ~> check {
+      status shouldBe StatusCodes.InternalServerError
+      val expectedResponse = responseAs[ErrorResponse]
+      expectedResponse.message shouldBe PaymentRoutes.ErrorMessage
     }
   }
 }

@@ -24,6 +24,4 @@ trait DataStore extends LazyLogging {
   def fetchTransactionById(transactionId: TransactionId): Option[Transaction]
 
   def fetchTransactionHistoryById(transactionId: TransactionId): Option[List[Transaction]]
-
-  def logBothStores: Unit
 }

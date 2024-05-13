@@ -61,13 +61,4 @@ sealed class InMemoryDataStore extends DataStore with LazyLogging {
         updatedTransaction
       }
     }
-
-  def logBothStores: Unit = {
-    logger.info("-" * 20)
-    logger.info("Transactions:\n" + Transactions.mkString("\n"))
-    logger.info("-" * 20)
-    logger.info("All transactions:\n" + AllTransactionsStore.mkString("\n"))
-    logger.info("-" * 20)
-
-  }
 }

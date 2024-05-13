@@ -21,7 +21,8 @@ lazy val dependencies = Seq(
     com.typesafe.`scala-logging`.`scala-logging`,
     ch.qos.logback.`logback-classic`,
     org.scalatest.scalatest % Test,
-    com.typesafe.akka.`akka-stream-testkit`,
-    com.typesafe.akka.`akka-http-testkit`,
+    org.scalatestplus.`mockito-5-10` % Test,
+    com.typesafe.akka.`akka-stream-testkit` % Test,
+    com.typesafe.akka.`akka-http-testkit` % Test,
   )
 )
