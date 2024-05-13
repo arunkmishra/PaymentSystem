@@ -25,7 +25,7 @@ cd paymentsystem
 - To start the server, use: `sbt run`.
 #### Run using docker
 - Pull image 
-  - Mac `docker pull arunmishra/payment-systemlatest`
+  - Mac: `docker pull arunmishra/payment-system:latest`
   - Linux/amd: `docker pull arunmishra/paymentsystem_amd:latest`
 - Or build image `docker build -t payment-system . `
 - Run application ` docker run -p 8080:8080 arunmishra/payment-system:latest`
